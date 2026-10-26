@@ -164,7 +164,10 @@ export default function ArticleContent({
         loop={false}
         speed={() => 300}
       >
+        {/* Replace the host subtree only when HTML changes: translation may have
+            replaced text nodes that React would otherwise reconcile. */}
         <div
+          key={article.content}
           className={cn(
             "article-content prose max-w-none",
             "prose-pre:rounded-lg prose-pre:shadow-small",

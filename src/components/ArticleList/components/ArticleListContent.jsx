@@ -50,7 +50,7 @@ function ListFooter({
         ) : (
           <CheckCheck data-icon="inline-start" />
         )}
-        {t("articleList.markAllRead")}
+        <span>{t("articleList.markAllRead")}</span>
       </Button>
     </div>
   );

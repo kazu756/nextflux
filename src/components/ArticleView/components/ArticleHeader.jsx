@@ -29,7 +29,7 @@ export default function ArticleHeader({
           )}
         >
           <FeedIcon feedId={article.feed?.id} />
-          {article.feed?.title}
+          <span>{article.feed?.title}</span>
         </button>
         <h1
           className="article-title font-semibold my-2 hover:cursor-pointer leading-tight"

@@ -221,7 +221,7 @@ export default function ArticleCard({ article }) {
               }}
             >
               {<ArrowUpFromLine className="size-4 text-muted-foreground" />}
-              {t("common.markAboveAsRead")}
+              <span>{t("common.markAboveAsRead")}</span>
             </ContextMenuItem>
             <ContextMenuItem
               onClick={() => {
@@ -233,9 +233,11 @@ export default function ArticleCard({ article }) {
               ) : (
                 <Circle className="size-4 text-muted-foreground p-0.5" />
               )}
-              {article.status === "read"
-                ? t("common.markAsUnread")
-                : t("common.markAsRead")}
+              <span>
+                {article.status === "read"
+                  ? t("common.markAsUnread")
+                  : t("common.markAsRead")}
+              </span>
             </ContextMenuItem>
           </ContextMenuGroup>
         </ContextMenuContent>

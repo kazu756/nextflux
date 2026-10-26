@@ -145,9 +145,11 @@ export default function ArticleStateActions({
           delay={0}
         />
         <TooltipContent>
-          {article?.shownOriginal
-            ? t("articleView.showSummary")
-            : t("articleView.getFullText")}
+          <span>
+            {article?.shownOriginal
+              ? t("articleView.showSummary")
+              : t("articleView.getFullText")}
+          </span>
           <Kbd>G</Kbd>
         </TooltipContent>
       </Tooltip>
