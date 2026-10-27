@@ -9,6 +9,12 @@ import {
 } from "../stores/articlesStore.js";
 import minifluxAPI from "@/api/miniflux";
 import { reportError } from "@/lib/errors.js";
+import { toast } from "sonner";
+import {
+  fetchReaderContent,
+  BunshunArticleError,
+} from "@/api/bunshunArticles.js";
+import { createArticleContentToggle } from "@/services/articleContentToggle.js";
 
 // 处理文章状态更新
 export const handleMarkStatus = async (article) => {
@@ -65,23 +71,15 @@ export const handleMarkBelowAsRead = async (articleId) => {
 };
 
 // 处理内容切换
-export const handleToggleContent = async (article) => {
-  if (!article || loadingOriginContent.get()) return;
-
-  try {
-    loadingOriginContent.set(true);
-    const showOriginal = !article.shownOriginal;
-
-    activeArticle.set({
-      ...article,
-      content: showOriginal
-        ? await minifluxAPI.fetchEntryContent(article.id)
-        : article.originalContent,
-      shownOriginal: showOriginal,
-    });
-  } catch (error) {
+export const handleToggleContent = createArticleContentToggle({
+  activeArticle,
+  loading: loadingOriginContent,
+  loadContent: (article) => {
+    const worker = import.meta.env.VITE_BUNSHUN_ARTICLE_WORKER_URL;
+    return fetchReaderContent(article, worker, minifluxAPI.fetchEntryContent);
+  },
+  onError: (error) => {
     reportError(error, "article.toggleContent");
-  } finally {
-    loadingOriginContent.set(false);
-  }
-};
+    if (error instanceof BunshunArticleError) toast.error(error.message);
+  },
+});
