@@ -1,0 +1,15 @@
+{
+  "name": "nextflux-bunshun-images",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --local --ip 127.0.0.1 --port 8787",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "4.153.0"
+  },
+  "dependencies": {
+    "nextflux": "file:../.."
+  }
+}

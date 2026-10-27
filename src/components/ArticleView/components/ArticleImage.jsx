@@ -5,6 +5,8 @@ import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils.js";
 import { memo } from "react";
 import { Image } from "@/components/ui/Image.jsx";
+import { sessionAccount } from "@/stores/authStore.js";
+import { getArticleImageSource } from "@/domain/articles/articleImageSource.js";
 
 function ArticleImage({ imgNode, type = "article" }) {
   const { t } = useTranslation();
@@ -12,6 +14,11 @@ function ArticleImage({ imgNode, type = "article" }) {
   const imgRef = useRef(null);
 
   const { src, alt = "" } = imgNode.attribs;
+  const displaySrc = getArticleImageSource(
+    src,
+    import.meta.env.VITE_BUNSHUN_IMAGE_WORKER_URL,
+    sessionAccount.serverUrl,
+  );
 
   if (error) {
     return (
@@ -30,7 +37,7 @@ function ArticleImage({ imgNode, type = "article" }) {
   }
 
   return (
-    <PhotoView key={src} src={src}>
+    <PhotoView key={displaySrc} src={displaySrc}>
       <div>
         <div
           className={cn(
@@ -43,7 +50,7 @@ function ArticleImage({ imgNode, type = "article" }) {
         >
           <Image
             ref={imgRef}
-            src={src}
+            src={displaySrc}
             alt={alt}
             loading="eager"
             className="h-auto object-cover m-0"

@@ -5,8 +5,10 @@ import { useStore } from "@nanostores/react";
 import { ImageOff } from "lucide-react";
 import { memo } from "react";
 import { Image } from "@/components/ui/Image.jsx";
+import { sessionAccount } from "@/stores/authStore.js";
+import { getArticleImageSource } from "@/domain/articles/articleImageSource.js";
 
-function ArticleCardCover({ imageUrl }) {
+function ArticleCardCoverImage({ imageUrl }) {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(true);
   const imgRef = useRef(null);
@@ -61,6 +63,16 @@ function ArticleCardCover({ imageUrl }) {
       </div>
     </div>
   );
+}
+
+function ArticleCardCover({ imageUrl }) {
+  const displaySrc = getArticleImageSource(
+    imageUrl,
+    import.meta.env.VITE_BUNSHUN_IMAGE_WORKER_URL,
+    sessionAccount.serverUrl,
+  );
+  // Scope load/error state to the resolved URL, including the child Image state.
+  return <ArticleCardCoverImage key={displaySrc} imageUrl={displaySrc} />;
 }
 
 const arePropsEqual = (prevProps, nextProps) => {
