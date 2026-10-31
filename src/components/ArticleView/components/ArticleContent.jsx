@@ -1,5 +1,6 @@
 import { lazy, Suspense, useMemo } from "react";
 import parse from "html-react-parser";
+import translationSafeText from "@/domain/articles/translationSafeText.js";
 import { PhotoProvider } from "react-photo-view";
 import { useStore } from "@nanostores/react";
 import { settingsState } from "@/stores/settingsStore.js";
@@ -109,6 +110,7 @@ export default function ArticleContent({
   const { content, inlineUrls } = useMemo(() => {
     const inlineUrls = [];
     const content = parse(article.content, {
+      transform: translationSafeText,
       replace: (node) => {
         if (node.name === "audio" || node.name === "video") {
           const media = getArticleMedia(node);
@@ -149,7 +151,7 @@ export default function ArticleContent({
         ) : useThirdPartyMediaPlayer ? (
           <MediaPlayer
             key={`${article.id}:${enclosure.url}`}
-              kind="video"
+            kind="video"
             src={enclosure.url}
             type={enclosure.mime_type}
             title={enclosure.title || article.title}
