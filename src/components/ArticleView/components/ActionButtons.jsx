@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
 import { useStore } from "@nanostores/react";
 import { handleMarkStatus } from "@/handlers/articleHandlers.js";
@@ -12,6 +13,8 @@ import { useAutoHideToolbar } from "@/hooks/useAutoHideToolbar.js";
 import { settingsState } from "@/stores/settingsStore.js";
 export default function ActionButtons({
   scrollAreaRef,
+  mobileActionsTarget,
+  isMobileLayout,
   isExpanded,
   canExpand,
   onToggleExpanded,
@@ -40,6 +43,14 @@ export default function ActionButtons({
     navigate(`${basePath === "/" ? "" : basePath}/article/${target.id}`);
     if (target.status !== "read") await handleMarkStatus(target);
   };
+  const stateActions = (
+    <ArticleStateActions
+      article={article}
+      canExpand={canExpand}
+      isExpanded={isExpanded}
+      onToggleExpanded={onToggleExpanded}
+    />
+  );
   return (
     <div
       ref={toolbarRef}
@@ -55,12 +66,10 @@ export default function ActionButtons({
           onNext={() => openArticle(next)}
           onPrevious={() => openArticle(previous)}
         />
-        <ArticleStateActions
-          article={article}
-          canExpand={canExpand}
-          isExpanded={isExpanded}
-          onToggleExpanded={onToggleExpanded}
-        />
+        {isMobileLayout
+          ? mobileActionsTarget &&
+            createPortal(stateActions, mobileActionsTarget)
+          : stateActions}
       </div>
     </div>
   );
