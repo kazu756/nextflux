@@ -123,6 +123,7 @@ export default function ArticleView() {
   } = useStore(settingsState);
   const reduceMotion = useReducedMotion();
   const scrollAreaRef = useRef(null);
+  const [mobileActionsTarget, setMobileActionsTarget] = useState(null);
   const previousExpansion = useRef(isExpanded);
   useLayoutEffect(() => {
     const changed = previousExpansion.current !== isExpanded;
@@ -160,6 +161,7 @@ export default function ArticleView() {
                 key={articleId ? "reader" : "empty"}
                 className={cn(
                   "article-reader-panel relative h-full w-full min-w-0",
+                  isMedium && "flex flex-col",
                   showReadingRail && "has-reading-rail",
                 )}
                 initial={
@@ -190,17 +192,21 @@ export default function ArticleView() {
                     <ScrollArea
                       viewportRef={scrollAreaRef}
                       className={cn(
-                        "article-scroll-area w-full min-w-0 h-full bg-popover relative",
+                        "article-scroll-area w-full min-w-0 bg-popover relative",
+                        isMedium ? "min-h-0 flex-1" : "h-full",
                         !isExpanded && "md:shadow-custom md:rounded-2xl",
                       )}
                       viewportClassName={cn(
-                        (isExpanded || isMedium) && "px-safe pb-safe",
+                        (isExpanded || isMedium) && "px-safe",
+                        isExpanded && !isMedium && "pb-safe",
                       )}
                     >
                       <ActionButtons
                         scrollAreaRef={scrollAreaRef}
                         isExpanded={isExpanded}
                         canExpand={!isMedium}
+                        isMobileLayout={isMedium}
+                        mobileActionsTarget={mobileActionsTarget}
                         onToggleExpanded={() =>
                           setFullView((current) => !current)
                         }
@@ -269,6 +275,12 @@ export default function ArticleView() {
                         </ArticleTransition>
                       </AnimatePresence>
                     </ScrollArea>
+                    {isMedium && (
+                      <div
+                        ref={setMobileActionsTarget}
+                        className="relative z-50 flex shrink-0 justify-end bg-popover px-safe-offset-2 pt-2 pb-safe-offset-2"
+                      />
+                    )}
                     {showReadingRail && article && !error && (
                       <ArticleReadingRail
                         key={articleId}
