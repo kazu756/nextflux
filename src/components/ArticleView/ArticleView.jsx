@@ -278,7 +278,7 @@ export default function ArticleView() {
                     {isMedium && (
                       <div
                         ref={setMobileActionsTarget}
-                        className="relative z-50 flex shrink-0 justify-end bg-popover px-safe-offset-2 pt-2 pb-safe-offset-2"
+                        className="relative z-50 flex shrink-0 justify-center bg-popover px-safe-offset-2 pt-2 pb-safe-offset-2 [&_button]:size-9 [&_button_svg]:size-[18px]! [&>[data-slot=liquid-glass]]:p-1"
                       />
                     )}
                     {showReadingRail && article && !error && (
