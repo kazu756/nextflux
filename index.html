@@ -62,6 +62,75 @@
 </head>
 <body class="bg-sidebar">
   <div id="root"></div>
-  <script src="/src/main.jsx" type="module"></script>
+
+<script>
+(() => {
+  if (!new URLSearchParams(location.search).has("translation-trace")) return;
+
+  const selectors = { heading: ".article-title", body: ".article-view-content .article-content.prose" };
+  const previous = {};
+  const events = [];
+  const started = performance.now();
+  let route = location.pathname;
+  let translated;
+  const output = document.createElement("textarea");
+  output.readOnly = true;
+  output.rows = 7;
+  output.setAttribute("aria-label", "翻訳診断ログ");
+
+  function record(message) {
+    events.push(Math.round(performance.now() - started) + " ms | " + message);
+    if (events.length > 150) events.shift();
+    output.value = events.join("\n");
+    output.scrollTop = output.scrollHeight;
+  }
+
+  function inspect(records) {
+    if (route !== location.pathname) {
+      route = location.pathname;
+      record("navigation");
+    }
+    const root = document.documentElement;
+    const isTranslated = root.matches(".translated-ltr, .translated-rtl");
+    if (translated !== isTranslated) {
+      translated = isTranslated;
+      record("translation marker " + (translated ? "on" : "off"));
+    }
+    for (const [name, selector] of Object.entries(selectors)) {
+      const node = document.querySelector(selector);
+      const old = previous[name];
+      const fonts = node?.querySelectorAll("font").length ?? 0;
+      const changes = records.filter(({ target }) =>
+        node?.contains(target) || old?.contains(target)
+      ).length;
+      if (old !== node) {
+        previous[name] = node;
+        record(name + (node ? " mounted" : " removed") + " | font " + fonts);
+      }
+      if (changes) record(name + " changes " + changes + " | font " + fonts);
+    }
+  }
+
+  const observer = new MutationObserver(inspect);
+  observer.observe(document.getElementById("root"), {
+    subtree: true, childList: true, characterData: true,
+  });
+  observer.observe(document.documentElement, {
+    attributes: true, attributeFilter: ["class", "lang"],
+  });
+  record("nextflux trace ready");
+  inspect([]);
+
+  const panel = document.createElement("details");
+  panel.translate = false;
+  panel.style.cssText =
+    "position:fixed;bottom:8px;left:8px;z-index:2147483647;background:#202124;color:#fff;padding:8px;border:1px solid #aaa;border-radius:6px";
+  const title = document.createElement("summary");
+  title.textContent = "翻訳診断ログ";
+  output.style.cssText = "display:block;width:min(440px,85vw);color:#111;background:#fff";
+  panel.append(title, output);
+  document.body.append(panel);
+})();
+</script>  <script src="/src/main.jsx" type="module"></script>
 </body>
 </html>
